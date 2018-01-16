@@ -1,0 +1,7 @@
+C:\Users\Magda_Mateusz\Desktop\ProgDuckTV\ProgDuckTV\bin\Debug\ProgDuckTV.exe.config
+C:\Users\Magda_Mateusz\Desktop\ProgDuckTV\ProgDuckTV\bin\Debug\ProgDuckTV.exe
+C:\Users\Magda_Mateusz\Desktop\ProgDuckTV\ProgDuckTV\bin\Debug\ProgDuckTV.pdb
+C:\Users\Magda_Mateusz\Desktop\ProgDuckTV\ProgDuckTV\obj\Debug\ProgDuckTV.csprojResolveAssemblyReference.cache
+C:\Users\Magda_Mateusz\Desktop\ProgDuckTV\ProgDuckTV\obj\Debug\ProgDuckTV.csproj.CoreCompileInputs.cache
+C:\Users\Magda_Mateusz\Desktop\ProgDuckTV\ProgDuckTV\obj\Debug\ProgDuckTV.exe
+C:\Users\Magda_Mateusz\Desktop\ProgDuckTV\ProgDuckTV\obj\Debug\ProgDuckTV.pdb

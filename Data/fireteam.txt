@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html  xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<script type="text/javascript" src="/assets/7361acc1/jquery.js"></script>
+<title>Fireteam</title>
+	<link rel="stylesheet" type="text/css" href="/css/dtv.css" />
+	<link rel="shortcut icon" href="/ducktv_favicon.ico" type="image/x-icon" />
+		<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	 -->
+	 
+	<link href="http://vjs.zencdn.net/c/video-js.css" rel="stylesheet">
+	<script src="http://vjs.zencdn.net/c/video.js"></script>
+	<script src="/js/jquery.simplemodal.1.4.4.min.js"></script>
+	
+	<script type="text/javascript">
+
+	var currentmenu='';
+	var to;
+	function showmenu(id) {
+		window.clearTimeout(to);
+		/*if(currentmenu==id) {
+			hidemenu(currentmenu);
+			return;
+		}*/
+		if(currentmenu!=id && currentmenu)
+			hidemenu(currentmenu);
+		
+		if(currentmenu!=id) {
+			$('#'+id).css('height','auto');
+			h=$('#'+id).height();
+			$('#'+id).height(0);
+			$('#'+id).animate({ height: h+'px'});
+			currentmenu=id;
+		}
+	}
+
+	function hidemenu(id) {
+		$('#'+id).animate({ height: '0px'});
+		if(currentmenu==id)
+			currentmenu='';
+	}
+
+	var alertmessage='';
+	
+	$(document).ready(function() {
+		$('.menubg').on('mouseout',function() {
+			to=window.setTimeout(function() { hidemenu(currentmenu);},1000);
+		}).on('mouseover',function() {
+			window.clearTimeout(to);
+		});
+		$('.menu').on('mouseout',function() {
+			to=window.setTimeout(function() { hidemenu(currentmenu);},1000);
+		});
+		$('.menubg a').on('mouseover',function() {
+			window.clearTimeout(to);
+		});
+		$('#overflow').on('click',function() { $('.overflow').hide(); });
+
+		if(alertmessage)
+			alert(alertmessage);
+		
+	});
+
+	var duckradio=null;
+	function radio(l) {
+		duckradio=window.open("/duckradio.php?lang="+l,duckradio,"width=430,height=250");
+		duckradio.focus();
+	}
+
+
+
+	function showsubscription() {
+		$('#subscriptiondialog').modal();
+	}
+
+	var submitsubscription=0;
+	function fblogin() {
+		submitsubscription=1;
+	   FB.login(function(response) { }, {scope:'email'});
+	}
+	
+	</script>
+	<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-20548239-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+
+<body>
+<div id="fb-root"></div>
+<script>
+window.fbAsyncInit = function() {
+	  FB.init({
+	    appId      : '212325448876159', // App ID
+	    status     : true, // check login status
+	    cookie     : true, // enable cookies to allow the server to access the session
+	    xfbml      : true  // parse XFBML
+	  });
+
+	  // Here we subscribe to the auth.authResponseChange JavaScript event. This event is fired
+	  // for any auth related change, such as login, logout or session refresh. This means that
+	  // whenever someone who was previously logged out tries to log in again, the correct case below 
+	  // will be handled. 
+	  FB.Event.subscribe('auth.authResponseChange', function(response) {
+	    // Here we specify what we do with the response anytime this event occurs. 
+	    if (response.status === 'connected') {
+	      // The response object is returned with a status field that lets the app know the current
+	      // login status of the person. In this case, we're handling the situation where they 
+	      // have logged in to the app.
+	      
+	      if(submitsubscription) {
+		      FB.api('/me', function(response) {
+				submitsubscription=0;
+				console.log(response);
+				$('#Subscription_name').val(response.name);
+				$('#Subscription_email').val(response.email);
+				$('#Subscription_repeatemail').val(response.email);
+				$('#Subscription_fbid').val(response.id);
+				send();
+		      });
+	      }
+	      
+	    } else if (response.status === 'not_authorized') {
+	      // In this case, the person is logged into Facebook, but not into the app, so we call
+	      // FB.login() to prompt them to do so. 
+	      // In real-life usage, you wouldn't want to immediately prompt someone to login 
+	      // like this, for two reasons:
+	      // (1) JavaScript created popup windows are blocked by most browsers unless they 
+	      // result from direct user interaction (such as a mouse click)
+	      // (2) it is a bad experience to be continually prompted to login upon page load.
+	      //FB.login();
+	    } else {
+	      // In this case, the person is not logged into Facebook, so we call the login() 
+	      // function to prompt them to do so. Note that at this stage there is no indication
+	      // of whether they are logged into the app. If they aren't then they'll see the Login
+	      // dialog right after they log in to Facebook. 
+	      // The same caveats as above apply to the FB.login() call here.
+	      //FB.login();
+	    }
+	  });
+	  };
+
+	  // Load the SDK asynchronously
+	  (function(d){
+	   var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+	   if (d.getElementById(id)) {return;}
+	   js = d.createElement('script'); js.id = id; js.async = true;
+	   js.src = "//connect.facebook.net/en_US/all.js";
+	   ref.parentNode.insertBefore(js, ref);
+	  }(document));
+
+	  // Here we run a very simple test of the Graph API after login is successful. 
+	  // This testAPI() function is only called in those cases. 
+	  function testAPI() {
+	    console.log('Welcome!  Fetching your information.... ');
+	    FB.api('/me', function(response) {
+			console.log(response);
+		      console.log('Good to see you, ' + response.name + '.');
+	    });
+	  }
+
+</script>
+
+<div id="subscriptiondialog">
+	<br><br>
+	Become a full member and be the first to know about all new releases!	<br><br>
+	
+<script type="text/javascript">
+ 
+function send()
+{
+ 
+   var data=$("#subscription-form").serialize();
+ 
+ 
+  $.ajax({
+	type: 'POST',
+    url: 'https://www.ducktv.tv/subscription/create',
+    data:data,
+	success:function(data){
+                alert(data); 
+              },
+   	error: function(data) { // if error occured
+         alert("Error occured.please try again");
+         alert(data);
+    },
+ 
+  	dataType:'html'
+  });
+ 
+}
+ 
+</script>
+
+<form onsubmit="return false;" onkeypress=" if(event.keyCode == 13){ send(); } " id="subscription-form" action="/series/fireteam-21.html" method="post">
+	<input name="Subscription[fbid]" id="Subscription_fbid" type="hidden" />		<table>
+		<colgroup>
+			<col width="130">
+			<col width="230">
+		</colgroup>
+
+		<tr>
+			<td><label for="Subscription_name">parent name</label>:</td>
+			<td><input size="60" maxlength="60" name="Subscription[name]" id="Subscription_name" type="text" />		</td>
+		</tr>
+		<tr>
+			<td><label for="Subscription_email">parent email</label>:</td>
+			<td><input size="60" maxlength="320" name="Subscription[email]" id="Subscription_email" type="text" />		</td>
+		</tr>
+		<tr>
+			<td><label for="Subscription_repeatemail">confirm email</label>:</td>
+			<td><input size="60" maxlength="320" name="Subscription[repeatemail]" id="Subscription_repeatemail" type="text" />			</td>
+		</tr>		
+		<tr>
+			<td></td>
+			<td style="text-align:right;"><input onclick="send();" id="subsbtn" value="send" name="yt0" type="button" /></td>
+		</tr>
+	</table>
+	<!-- <fieldset>
+    <legend>OR</legend>
+    <a href="javascript:fblogin();" id="facebookbutton"><img src="/images/f.png"/>subscribe with facebook</a>
+    </fieldset>  -->
+	
+
+</form></div>
+<div id="skycontainer">
+	<div id="overflow" class="overflow"></div>
+	<div id="logo"></div>
+	<div id="container">
+		<a href="/" id="logobtn"></a>	
+		<a href="javascript:;" onclick="radio('en')" class="radio"></a>
+		<a href="?lang=sk" class="headerbluelink"><img src="/images/flag_sk.png"/></a>
+		<a href="/tunein/view?id=1" class="headerbluelink">ducktv in your country</a>
+		<a id="kidsafe" href="http://www.kidsafeseal.com/certifiedproducts/ducktv.html" target="_blank"><img border="0" alt="Ducktv.tv is certified by the kidSAFE Seal Program." src="http://www.kidsafeseal.com/sealimage/18963075101548395507/ducktv_medium_darktm.png"></a>
+		<div id="menu">
+			<div class="right">
+				<a href="javascript:;" onmouseover="showmenu('m3');" class="menu"><img src="/images/menu_parentsclub_en.png"/></a>
+				<div class="almenu">
+					<div class="menubg" id="m3" style="background-color:#83428d;">
+						<br/>
+						<a href="/about-ducktv.html">about ducktv</a>
+<a href="javascript:showsubscription();">become a member</a>
+<a href="http://shop.ducktv.tv">ducktv shop</a>
+<a href="/heading/familyfun-1.html">family fun</a>
+<a href="/babylog/welcome">babyLOG</a>
+						<br/>
+					</div>
+					<div class="menubottomcloud"></div>
+				</div>
+			</div>
+			<div class="right">
+				<a href="javascript:;" onmouseover="showmenu('m2');" class="menu"><img src="/images/menu_playandlearn_en.png"/></a>
+				<div class="almenu">
+					<div class="menubg" id="m2" style="background-color:#ff6600;">
+						<br/>
+						<a href="/onlinegames.html">online games</a>
+<a href="/duckschool.html">duck school</a>
+<a href="/page/go-mobile-11.html">go mobile!</a>
+						<br/>
+					</div>
+					<div class="menubottomcloud"></div>
+				</div>
+			</div>
+			<div class="right">
+				<a href="javascript:;" onmouseover="showmenu('m1');" class="menu"><img src="/images/menu_programs_en.png"/></a>
+				<div class="almenu" style="margin-left: 10px;">
+					<div class="menubg" id="m1" style="background-color:#003060;">
+						<br/>
+						<a href="/schedule.html">schedule</a>
+<a href="/programs.html">programs</a>
+						<br/>
+					</div>
+					<div class="menubottomcloud"></div>
+				</div>
+			</div>
+		</div>
+		
+		<a href="http://www.youtube.com/ducktv" target="_blank" class="social" style="margin-right:33px"><img src="/images/yt.png"/></a>
+		<a href="http://www.facebook.com/ducktv" target="_blank" class="social"><img src="/images/fb.png"/></a>
+		
+		<div class="clear"></div>
+		
+		<div id="content">
+	<script type="text/javascript">
+
+function play_episode() {
+	$('.overflow').show();
+	_V_("my_video_1").ready(function(){
+		var myPlayer = this;
+  		myPlayer.play();
+	});
+}
+
+</script>
+<div id="content">
+<div id="seriecontent">
+	<div id="seriecontentinner">
+		<p>The 3 firemen help out the residents of their village every way they can.</p>		<table>
+			<tr>
+				<td rowspan="2" class="serie_hdsd"><img src="/images/serie_sd.png"/></td>
+				<td class="serie_day">Today:</td>
+				<td class="serie_dates">
+								<span>00:09</span> 
+								<span>01:49</span> 
+								<span>19:30</span> 
+								<span>20:52</span> 
+								</td>
+			</tr>
+			<tr>
+				<td class="serie_day">Tomorrow:</td>
+				<td class="serie_dates">
+								<span>12:25</span> 
+								<span>15:23</span> 
+								<span>18:51</span> 
+								</td>
+			</tr>
+			<tr>
+				<td colspan="3" style="height: 30px;"></td>
+			</tr>
+			<tr>
+				<td rowspan="2" class="serie_hdsd"><img src="/images/serie_hd.png"/></td>
+				<td class="serie_day">Today:</td>
+				<td class="serie_dates">
+								<span>19:37</span> 
+								</td>
+			</tr>
+			<tr>
+				<td class="serie_day">Tomorrow:</td>
+				<td class="serie_dates">
+								<span>12:17</span> 
+								<span>15:20</span> 
+								<span>19:05</span> 
+								</td>
+			</tr>
+			
+		</table>
+	
+		<div class="serietips left">
+			<div><img src="/images/viewingtips.png"/>viewing tips</div>
+			<p></p><p>Talk to your child about helping each other and if s/he is older about the importance of firemen's work.&nbsp;Fireteam shows children that we all make mistakes, and they can be fixed, an important lesson for easing fear and anxiety.</p><p></p>		</div>
+		<div class="serietips right">
+			<div><img src="/images/educationalvalues.png"/>educational values</div>
+			<p></p><ul><li>Learning the meaning of responsibility</li><li>Developing social abilities</li><li>Learning initial Problem solving and decision-making skills</li></ul><p></p>		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="clear"></div>
+</div>
+<div id="serieleft">
+	<div class="serieavatar withcloud">
+		<img src="/files/serie/022_fireteam.png"/>
+		<div>
+			<a href="">Fireteam</a>
+		</div>
+	</div>
+		<a href="javascript:;" onclick="play_episode()"; id="seriewatch"></a>
+	
+	<div id="seriepreview" class="overflow">
+		Fireteam		<video id="my_video_1" class="video-js vjs-default-skin" controls
+		  preload="auto" width="640" height="360" data-setup="{}">
+		  <source src="/files/serie/022-016_sample.flv" type="video/flv">
+		  <!-- <source src="/files/serie/022-016_sample.flv" type="video/ogg">
+		  <source src="/files/serie/022-016_sample.flv" type="video/mp4"> -->
+		</video>
+	</div>
+		<div id="seriesocial">
+		<div class="fb-like" data-href="https://www.ducktv.tv/series/fireteam-21.html" data-action="like" data-share="false" data-send="true" data-layout="button_count" data-width="170" data-show-faces="false" data-font="verdana" data-colorscheme="dark"></div>
+	</div>
+			
+	
+		
+</div>
+<div class="clear"></div>
+</div>
+<script type="text/javascript" src="/js/jquery.jcarousel.js"></script>
+<script type="text/javascript">
+$(function() {
+    $('.jcarousel').jcarousel({
+        // Configuration goes here
+    	'wrap': 'both',
+    })
+    .jcarouselAutoscroll({
+            // Plugin configuration goes here
+    });
+
+    $('.jcarousel-prev').jcarouselControl({
+        target: '-=1'
+    });
+
+    $('.jcarousel-next').jcarouselControl({
+        target: '+=1'
+    });
+
+    $('.star')
+    	.on('mouseover',function() { $('#'+$(this).attr('rel')).css({display: 'inline-block'});})
+    	.on('mouseout',function() { $('#'+$(this).attr('rel')).css({display: 'none'});});
+});
+</script>
+<a class="jcarousel-prev left" href="#"><img src="/images/stars_left.png"/></a>
+<div class="jcarousel left">
+    <ul>
+		<li>
+			<a href="/series/lolaandthenumbers-111.html" rel="starname16" class="star" style="background-image:url('/files/stars/Lola.png');"/></a>
+			<span id="starname16">
+						Lola						</span>
+		</li>
+		<li>
+			<a href="/series/Henrys-Stories-118.html" rel="starname15" class="star" style="background-image:url('/files/stars/Henry.png');"/></a>
+			<span id="starname15">
+						Henry						</span>
+		</li>
+		<li>
+			<a href="/series/fireteam-21.html" rel="starname6" class="star" style="background-image:url('/files/stars/shorty.png');"/></a>
+			<span id="starname6">
+						Shorty						</span>
+		</li>
+		<li>
+			<a href="/series/color-clara-119.html" rel="starname17" class="star" style="background-image:url('/files/stars/Clara.png');"/></a>
+			<span id="starname17">
+						Clara						</span>
+		</li>
+		<li>
+			<a href="/series/mimo-and-bobo-11.html" rel="starname10" class="star" style="background-image:url('/files/stars/Mimo.png');"/></a>
+			<span id="starname10">
+						Mimo						</span>
+		</li>
+		<li>
+			<a href="/series/leon-art-24.html" rel="starname3" class="star" style="background-image:url('/files/stars/leon.png');"/></a>
+			<span id="starname3">
+						Leon						</span>
+		</li>
+		<li>
+			<a href="/series/didy-baby-12.html" rel="starname2" class="star" style="background-image:url('/files/stars/flora.png');"/></a>
+			<span id="starname2">
+						Flora						</span>
+		</li>
+		<li>
+			<a href="/series/doll-team-to-the-rescue-38.html" rel="starname13" class="star" style="background-image:url('/files/stars/1024-bell.png');"/></a>
+			<span id="starname13">
+						Bell						</span>
+		</li>
+		<li>
+			<a href="/series/what-is-your-job-79.html" rel="starname1" class="star" style="background-image:url('/files/stars/mark.png');"/></a>
+			<span id="starname1">
+						Mark						</span>
+		</li>
+		<li>
+			<a href="/series/hipp-hopp-cactus-22.html" rel="starname4" class="star" style="background-image:url('/files/stars/bugsy.png');"/></a>
+			<span id="starname4">
+						Bugsy						</span>
+		</li>
+		<li>
+			<a href="/series/hubbi-and-friends-13.html" rel="starname5" class="star" style="background-image:url('/files/stars/milo.png');"/></a>
+			<span id="starname5">
+						Milo						</span>
+		</li>
+		<li>
+			<a href="/series/hubbi-and-friends-13.html" rel="starname7" class="star" style="background-image:url('/files/stars/matti.png');"/></a>
+			<span id="starname7">
+						Matti						</span>
+		</li>
+		<li>
+			<a href="/series/dance-23.html" rel="starname8" class="star" style="background-image:url('/files/stars/1017-bluppy.png');"/></a>
+			<span id="starname8">
+						Bluppy						</span>
+		</li>
+</ul>
+    
+</div>
+<a class="jcarousel-next left" href="#"><img src="/images/stars_right.png"/></a>
+<div class="clear"></div>
+</div><!-- content -->
+		
+		<footer>
+			<div class="right">&copy; MEGA MAX MEDIA s.r.o. 2013. all rights reserved</div>
+			<a href="/contact_us.html">contact us</a>
+&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+<a href="/page/partners-9.html">partners</a>
+&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+<a href="/page/terms-and-conditions-8.html">terms & conditions</a>
+&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+<a href="/page/privacy_policy-7.html">privacy policy</a>
+			<div class="clear"></div>
+		</footer>	
+	</div><!-- container -->
+
+</div><!-- skycontainer -->
+</body>
+</html>
